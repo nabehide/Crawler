@@ -20,6 +20,7 @@ class Crawler(object):
         self.headless = config["headless"]
         self.mailAddress = config["mailAddress"]
         self.mailPassword = config["mailPassword"]
+        self.profile = config["profile"]
 
         self.options = Options()
         if self.headless:
@@ -27,8 +28,12 @@ class Crawler(object):
         self.options.add_argument("--disable-application-cache")
         self.options.add_argument("--disable-infobars")
         self.options.add_argument("--no-sandbox")
-        self.options.add_argument(
-            "--user-data-dir=./profile_" + self.__class__.__name__)
+        if self.profile:
+            self.options.add_argument(
+                "--user-data-dir=./profile_" + self.__class__.__name__)
+
+        self.open()
+        self.close()
 
     def open(self):
         while True:
@@ -73,6 +78,7 @@ class Crawler(object):
                 print("re-open")
                 self.close()
                 self.open()
+                self.login()
             raise True
 
     def _clickElement(self, el):
@@ -111,6 +117,7 @@ class Crawler(object):
                 print("re-open")
                 self.close()
                 self.open()
+                self.login()
             raise EC.TimeoutException
 
     def _timeStamp(self):
@@ -127,6 +134,7 @@ class Crawler(object):
                 print("re-open _getSoupText")
                 self.close()
                 self.open()
+                self.login()
             self.driver.get(currentURL)
             text = self.driver.page_source
             soup = BeautifulSoup(text, "html.parser")
@@ -159,6 +167,7 @@ class Crawler(object):
             print("re-open")
             self.close()
             self.open()
+            self.login()
             try:
                 self.driver.get(url)
                 return eval("self.driver.find_elements_by_" +
@@ -198,6 +207,7 @@ class Crawler(object):
             print("re-open")
             self.close()
             self.open()
+            self.login()
             self.driver.get(url)
             return True
         raise EC.TimeoutException
@@ -226,6 +236,7 @@ class Crawler(object):
             print("re-open")
             self.close()
             self.open()
+            self.login()
             self.driver.get(target)
             return True
         raise EC.TimeoutException
