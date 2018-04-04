@@ -7,8 +7,9 @@ from selenium import webdriver
 import selenium.common.exceptions as EC
 from selenium.webdriver.chrome.options import Options
 import pyautogui
-
 from colorama import Fore
+
+from Crawler.SendGmail import SendGmail
 
 
 class Crawler(object):
@@ -31,6 +32,8 @@ class Crawler(object):
         if self.profile:
             self.options.add_argument(
                 "--user-data-dir=./profile_" + self.__class__.__name__)
+
+        self.sendmail = SendGmail(self.mailAddress, self.mailPassword)
 
         self.open()
         self.close()
