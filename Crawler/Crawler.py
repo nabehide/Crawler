@@ -84,7 +84,7 @@ class Crawler(object):
                 self.login()
             raise True
 
-    def _clickElement(self, el):
+    def _clickElement(self, el, mouse=False):
         position = self.driver.get_window_position()
         self._activateWindow()
         el.location_once_scrolled_into_view
@@ -104,7 +104,10 @@ class Crawler(object):
         )
 
         time.sleep(2)
-        self._click(el, relogin=False)
+        if mouse:
+            pyautogui.click()
+        else:
+            self._click(el, reopen=False)
 
     def _closeOtherWindows(self, reopen=True):
         try:
@@ -185,6 +188,7 @@ class Crawler(object):
         for i in range(retry):
             try:
                 element.location_once_scrolled_into_view
+                time.sleep(1)
                 element.click()
             except (EC.TimeoutException, EC.WebDriverException):
                 print(
