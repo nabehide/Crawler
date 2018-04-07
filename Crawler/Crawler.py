@@ -88,10 +88,12 @@ class Crawler(object):
         position = self.driver.get_window_position()
         self._activateWindow()
         el.location_once_scrolled_into_view
+        size = el.size
         offset = self.driver.execute_script("return window.pageYOffset;")
         pyautogui.moveTo(
-            [el.location['x'] + position['x'] + 11,
-             el.location['y'] + position['y'] + 74 + 11 - offset]
+            [el.location['x'] + position['x'] + size["width"] / 2 + 1,
+             el.location['y'] + position['y'] + 74 + size["height"] / 2 + 1
+             - offset]
         )
 
         time.sleep(1)
@@ -99,8 +101,9 @@ class Crawler(object):
         el.location_once_scrolled_into_view
         offset = self.driver.execute_script("return window.pageYOffset;")
         pyautogui.moveTo(
-            [el.location['x'] + position['x'] + 10,
-             el.location['y'] + position['y'] + 74 + 10 - offset]
+            [el.location['x'] + position['x'] + size["width"] / 2,
+             el.location['y'] + position['y'] + 74 + size["height"] / 2
+             - offset]
         )
 
         time.sleep(2)
