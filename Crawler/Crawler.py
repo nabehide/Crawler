@@ -6,10 +6,12 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import selenium.common.exceptions as EC
 from selenium.webdriver.chrome.options import Options
-import pyautogui
 from colorama import Fore
 
 from Crawler.SendGmail import SendGmail
+
+import pyautogui
+pyautogui.FAILSAFE = False
 
 
 class Crawler(object):
@@ -30,8 +32,7 @@ class Crawler(object):
         self.options.add_argument("--disable-infobars")
         self.options.add_argument("--no-sandbox")
         if self.profile:
-            self.options.add_argument(
-                "--user-data-dir=./profile_" + self.__class__.__name__)
+            self.options.add_argument("--user-data-dir=./" + self.profile)
 
         self.sendmail = SendGmail(self.mailAddress, self.mailPassword)
 
@@ -45,7 +46,7 @@ class Crawler(object):
                     self.driverPath, chrome_options=self.options,
                 )
                 break
-            except ConnectionResetError:
+            except (ConnectionResetError, BrokenPipeError):
                 print("retry")
                 time.sleep(5)
 
@@ -85,28 +86,25 @@ class Crawler(object):
             raise True
 
     def _clickElement(self, el, mouse=False):
-        position = self.driver.get_window_position()
-        self._activateWindow()
-        el.location_once_scrolled_into_view
-        size = el.size
-        offset = self.driver.execute_script("return window.pageYOffset;")
-        pyautogui.moveTo(
-            [el.location['x'] + position['x'] + size["width"] / 2 + 1,
-             el.location['y'] + position['y'] + 74 + size["height"] / 2 + 1
-             - offset]
-        )
+        window = self.driver.get_window_position()
+
+        for i in range(2):
+            self._activateWindow()
+            for x in [-5, 0, 5]:
+                for y in [-5, 0, 5]:
+                    el.location_once_scrolled_into_view
+                    size = el.size
+                    offset = self.driver.execute_script(
+                        "return window.pageYOffset;")
+                    pyautogui.moveTo(
+                        [el.location['x'] + window['x'] +
+                         size["width"] / 2 + 1,
+                         el.location['y'] + window['y'] + 74
+                         + size["height"] / 2 + 1 - offset]
+                    )
+                time.sleep(0.2)
 
         time.sleep(1)
-        self._activateWindow()
-        el.location_once_scrolled_into_view
-        offset = self.driver.execute_script("return window.pageYOffset;")
-        pyautogui.moveTo(
-            [el.location['x'] + position['x'] + size["width"] / 2,
-             el.location['y'] + position['y'] + 74 + size["height"] / 2
-             - offset]
-        )
-
-        time.sleep(2)
         if mouse:
             pyautogui.click()
         else:
@@ -166,8 +164,8 @@ class Crawler(object):
                         "window.scrollTo(0, document.body.scrollHeight);")
                 except EC.WebDriverException:
                     break
-            except ConnectionResetError as e:
-                print("ConnectionResetError", e)
+            except (ConnectionResetError, BrokenPipeError) as e:
+                print(str(e))
                 break
             except Exception as e:
                 print("other exception", e)
@@ -202,17 +200,14 @@ class Crawler(object):
                         "window.scrollTo(0, document.body.scrollHeight);")
                 except EC.WebDriverException:
                     break
-            except ConnectionResetError as e:
-                print("ConnectionResetError", e)
+            except (ConnectionResetError, BrokenPipeError) as e:
+                print(str(e))
                 break
             except Exception as e:
                 print("other exception", e)
             else:
                 return True
-            if i == 0:
-                time.sleep(5)
-            else:
-                time.sleep(3)
+            time.sleep(3)
         if reopen:
             print("re-open")
             self.close()
@@ -237,8 +232,8 @@ class Crawler(object):
                 except EC.WebDriverException:
                     print("could not scroll")
                     break
-            except ConnectionResetError as e:
-                print("ConnectionResetError", e)
+            except (ConnectionResetError, BrokenPipeError) as e:
+                print(str(e))
                 break
             else:
                 return True
