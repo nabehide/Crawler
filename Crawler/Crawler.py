@@ -98,9 +98,9 @@ class Crawler(object):
                         "return window.pageYOffset;")
                     pyautogui.moveTo(
                         [el.location['x'] + window['x'] +
-                         size["width"] / 2 + 1,
+                         size["width"] / 2 + x,
                          el.location['y'] + window['y'] + 74
-                         + size["height"] / 2 + 1 - offset]
+                         + size["height"] / 2 + y - offset]
                     )
                 time.sleep(0.2)
 
