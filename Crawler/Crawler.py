@@ -36,10 +36,15 @@ class Crawler(object):
 
         self.sendmail = SendGmail(self.mailAddress, self.mailPassword)
 
+        self.timeout = 60
+
         self.open()
         self.close()
 
-    def open(self):
+    def open(self, twice=False):
+        if twice:
+            self.timeout *= 2
+
         while True:
             try:
                 self.driver = webdriver.Chrome(
@@ -51,7 +56,7 @@ class Crawler(object):
                 time.sleep(5)
 
         self.driver.implicitly_wait(10)
-        self.driver.set_page_load_timeout(60)
+        self.driver.set_page_load_timeout(self.timeout)
 
         return self._outputMessage("success", sys._getframe().f_code.co_name)
 
@@ -81,7 +86,7 @@ class Crawler(object):
             if reopen:
                 print("re-open")
                 self.close()
-                self.open()
+                self.open(True)
                 self.login()
             raise True
 
@@ -123,7 +128,7 @@ class Crawler(object):
             if reopen:
                 print("re-open")
                 self.close()
-                self.open()
+                self.open(True)
                 self.login()
             raise EC.TimeoutException
 
@@ -140,7 +145,7 @@ class Crawler(object):
             if reopen:
                 print("re-open _getSoupText")
                 self.close()
-                self.open()
+                self.open(True)
                 self.login()
             self.driver.get(currentURL)
             text = self.driver.page_source
@@ -173,7 +178,7 @@ class Crawler(object):
         if reopen:
             print("re-open")
             self.close()
-            self.open()
+            self.open(True)
             self.login()
             try:
                 self.driver.get(url)
@@ -211,7 +216,7 @@ class Crawler(object):
         if reopen:
             print("re-open")
             self.close()
-            self.open()
+            self.open(True)
             self.login()
             self.driver.get(url)
             return True
@@ -240,7 +245,7 @@ class Crawler(object):
         if reopen:
             print("re-open")
             self.close()
-            self.open()
+            self.open(True)
             self.login()
             self.driver.get(target)
             return True
