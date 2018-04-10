@@ -44,6 +44,7 @@ class Crawler(object):
     def open(self, twice=False):
         if twice:
             self.timeout *= 2
+            print("timeout", self.timeout)
 
         while True:
             try:
