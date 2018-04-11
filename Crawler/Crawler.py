@@ -145,7 +145,7 @@ class Crawler(object):
             text = self.driver.page_source
             soup = BeautifulSoup(text, "html.parser")
             return soup, text
-        except EC.WebDriverException:
+        except (EC.WebDriverException, TypeError):
             currentURL = self.driver.current_url
             if reopen:
                 print("re-open _getSoupText")
