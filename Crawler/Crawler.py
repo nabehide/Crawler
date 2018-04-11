@@ -112,6 +112,7 @@ class Crawler(object):
 
         time.sleep(1)
         if mouse:
+            self._activateWindow()
             pyautogui.click()
         else:
             self._click(el, reopen=False)
