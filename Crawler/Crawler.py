@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import selenium.common.exceptions as EC
 from selenium.webdriver.chrome.options import Options
+import colorama
 from colorama import Fore
 
 from Crawler.SendGmail import SendGmail
@@ -35,6 +36,8 @@ class Crawler(object):
             self.options.add_argument("--user-data-dir=./" + self.profile)
 
         self.sendmail = SendGmail(self.mailAddress, self.mailPassword)
+
+        colorama.init(autoreset=True)
 
         self.timeout = 60
 
