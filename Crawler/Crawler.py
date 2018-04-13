@@ -55,7 +55,8 @@ class Crawler(object):
                     self.driverPath, chrome_options=self.options,
                 )
                 break
-            except (ConnectionResetError, BrokenPipeError):
+            except (ConnectionResetError, BrokenPipeError,
+                    ConnectionRefusedError) as e:
                 print("retry")
                 time.sleep(5)
 
@@ -174,7 +175,8 @@ class Crawler(object):
                         "window.scrollTo(0, document.body.scrollHeight);")
                 except EC.WebDriverException:
                     break
-            except (ConnectionResetError, BrokenPipeError) as e:
+            except (ConnectionResetError, BrokenPipeError,
+                    ConnectionRefusedError) as e:
                 print(str(e))
                 break
             except Exception as e:
@@ -210,7 +212,8 @@ class Crawler(object):
                         "window.scrollTo(0, document.body.scrollHeight);")
                 except EC.WebDriverException:
                     break
-            except (ConnectionResetError, BrokenPipeError) as e:
+            except (ConnectionResetError, BrokenPipeError,
+                    ConnectionRefusedError) as e:
                 print(str(e))
                 break
             except Exception as e:
@@ -242,7 +245,8 @@ class Crawler(object):
                 except EC.WebDriverException:
                     print("could not scroll")
                     break
-            except (ConnectionResetError, BrokenPipeError) as e:
+            except (ConnectionResetError, BrokenPipeError,
+                    ConnectionRefusedError) as e:
                 print(str(e))
                 break
             else:
