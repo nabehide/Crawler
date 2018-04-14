@@ -41,9 +41,6 @@ class Crawler(object):
 
         self.timeout = 60
 
-        self.open()
-        self.close()
-
     def open(self, twice=False):
         if twice:
             self.timeout *= 2
@@ -66,8 +63,12 @@ class Crawler(object):
         return self._outputMessage("success", sys._getframe().f_code.co_name)
 
     def close(self):
-        self.driver.quit()
-        return self._outputMessage("success", sys._getframe().f_code.co_name)
+        try:
+            self.driver.quit()
+            return self._outputMessage(
+                "success", sys._getframe().f_code.co_name)
+        except AttributeError:
+            return self._outputMessage("fail", sys._getframe().f_code.co_name)
 
     def _outputMessage(self, status, method, message=""):
         normalColor = Fore.WHITE
