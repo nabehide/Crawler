@@ -11,9 +11,6 @@ from colorama import Fore
 
 from Crawler.SendGmail import SendGmail
 
-import pyautogui
-pyautogui.FAILSAFE = False
-
 
 class Crawler(object):
 
@@ -29,6 +26,10 @@ class Crawler(object):
         self.options = Options()
         if self.headless:
             self.options.add_argument("--headless")
+        else:
+            import pyautogui
+            pyautogui.FAILSAFE = False
+
         self.options.add_argument("--disable-application-cache")
         self.options.add_argument("--disable-infobars")
         self.options.add_argument("--no-sandbox")
