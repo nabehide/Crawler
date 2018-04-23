@@ -5,7 +5,6 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import selenium.common.exceptions as EC
-from selenium.webdriver.chrome.options import Options
 import colorama
 from colorama import Fore
 
@@ -23,18 +22,33 @@ class Crawler(object):
         self.mailPassword = config["mailPassword"]
         self.profile = config["profile"]
 
-        self.options = Options()
+        self.options = webdriver.ChromeOptions()
         if self.headless:
             self.options.add_argument("--headless")
+            self.options.add_argument("--disable-gpu")
+            self.options.add_argument("--window-size=1280x1696")
         else:
             import pyautogui
             pyautogui.FAILSAFE = False
 
+        if "binaryLocation" in config.keys():
+            self.options.binary_location = config["binaryLocation"]
+
         self.options.add_argument("--disable-application-cache")
         self.options.add_argument("--disable-infobars")
         self.options.add_argument("--no-sandbox")
+        self.options.add_argument("--hide-scrollbars")
+        self.options.add_argument("--enable-logging")
+        self.options.add_argument("--log-level=0")
+        self.options.add_argument("--v=99")
+        self.options.add_argument("--single-process")
+        self.options.add_argument("--ignore-certificate-errors")
+        self.options.add_argument(
+            "user-agent=Mozilla/5.0 (X11; Linux x86_64)" +
+            "AppleWebkit/537.36 (KHTML, like Gecko) " +
+            "Chrome/61.0.3163.100 Safari/537.36")
         if self.profile:
-            self.options.add_argument("--user-data-dir=./" + self.profile)
+            self.options.add_argument("--user-data-dir=" + self.profile)
 
         self.sendmail = SendGmail(self.mailAddress, self.mailPassword)
 
