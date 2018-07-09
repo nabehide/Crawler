@@ -52,6 +52,8 @@ class Crawler(object):
 
         self.sendmail = SendGmail(self.mailAddress, self.mailPassword)
 
+        self.wait = config["wait"] if "wait" in config.keys() else 1
+
         colorama.init(autoreset=True)
 
         self.timeout = 60
@@ -217,7 +219,7 @@ class Crawler(object):
         for i in range(retry):
             try:
                 element.location_once_scrolled_into_view
-                time.sleep(1)
+                time.sleep(self.wait)
                 element.click()
             except (EC.TimeoutException, EC.WebDriverException):
                 print(
@@ -249,6 +251,7 @@ class Crawler(object):
     def _getRetry(self, target, retry=3, reopen=True):
         for i in range(retry):
             try:
+                time.sleep(self.wait)
                 self.driver.get(target)
             except (EC.TimeoutException, EC.WebDriverException):
                 print(
