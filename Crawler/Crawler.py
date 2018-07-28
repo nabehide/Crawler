@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 from datetime import datetime
@@ -98,6 +99,12 @@ class Crawler(object):
             print(normalColor + message)
         return (self._timeStamp() + "[success]" +
                 self.__class__.__name__ + " " + method + " " + message)
+
+    def _mail(self, message):
+        self.sendmail.send(
+            subject=os.uname()[1] + " " + self.__class__.__name__,
+            message=message,
+        )
 
     def _activateWindow(self, index=0, reopen=True):
         try:
