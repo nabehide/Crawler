@@ -16,14 +16,10 @@ class Crawler(object):
 
     def __init__(self, config):
 
-        self.driverPath = config["driverPath"]
-        self.debug = config["debug"]
-        self.headless = config["headless"]
-        self.mailAddress = config["mailAddress"]
-        self.mailPassword = config["mailPassword"]
-        self.profile = config["profile"]
-
         self.options = webdriver.ChromeOptions()
+
+        self._loadConfig(config)
+
         if self.headless:
             self.options.add_argument("--headless")
             self.options.add_argument("--disable-gpu")
@@ -31,9 +27,6 @@ class Crawler(object):
         else:
             import pyautogui
             pyautogui.FAILSAFE = False
-
-        if "binaryLocation" in config.keys():
-            self.options.binary_location = config["binaryLocation"]
 
         self.options.add_argument("--disable-application-cache")
         self.options.add_argument("--disable-infobars")
@@ -51,13 +44,43 @@ class Crawler(object):
         if self.profile:
             self.options.add_argument("--user-data-dir=" + self.profile)
 
-        self.sendmail = SendGmail(self.mailAddress, self.mailPassword)
-
-        self.wait = config["wait"] if "wait" in config.keys() else 1
-
         colorama.init(autoreset=True)
 
         self.timeout = 60
+
+    def _loadConfig(self, config):
+        if "driverPath" in config.keys():
+            self.driverPath = config["driverPath"]
+        else:
+            self.driverPath = "./chromedriver"
+
+        if "debug" in config.keys():
+            self.debug = config["debug"]
+        else:
+            self.debug = False
+
+        if "headless" in config.keys():
+            self.headless = config["headless"]
+        else:
+            self.headless = False
+
+        if "mailAddress" in config.keys() and "mailPassword" in config.keys():
+            self.flagMail = True
+            self.mailAddress = config["mailAddress"]
+            self.mailPassword = config["mailPassword"]
+            self.sendmail = SendGmail(self.mailAddress, self.mailPassword)
+        else:
+            self.flagMail = False
+
+        if "profile" in config.keys():
+            self.profile = config["profile"]
+        else:
+            self.profile = False
+
+        if "binaryLocation" in config.keys():
+            self.options.binary_location = config["binaryLocation"]
+
+        self.wait = config["wait"] if "wait" in config.keys() else 1
 
     def open(self, twice=False):
         if twice:
