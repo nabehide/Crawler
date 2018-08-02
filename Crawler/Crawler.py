@@ -124,10 +124,11 @@ class Crawler(object):
                 self.__class__.__name__ + " " + method + " " + message)
 
     def _mail(self, message):
-        self.sendmail.send(
-            subject=os.uname()[1] + " " + self.__class__.__name__,
-            message=message,
-        )
+        if self.flagMail:
+            self.sendmail.send(
+                subject=os.uname()[1] + " " + self.__class__.__name__,
+                message=message,
+            )
 
     def _activateWindow(self, index=0, reopen=True):
         try:
