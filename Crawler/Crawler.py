@@ -248,7 +248,7 @@ class Crawler(object):
     def _getCurrentURL(self, retry=3, wait=3):
         for i in range(retry):
             try:
-                return self.driver.current_url()
+                return self.driver.current_url
             except (EC.TimeoutException, EC.WebDriverException):
                 print(
                     "timeout: Retrying get current url " + str(i + 1) + "/" + str(retry),
