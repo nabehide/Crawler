@@ -245,10 +245,10 @@ class Crawler(object):
                 print("Could not find elements", target)
         raise EC.TimeoutException
 
-    def _getCurrentURL(self, retry=3):
+    def _getCurrentURL(self, retry=3, wait=3):
         for i in range(retry):
             try:
-                return self._getCurrentURL()
+                return self.driver.current_url()
             except (EC.TimeoutException, EC.WebDriverException):
                 print(
                     "timeout: Retrying get current url " + str(i + 1) + "/" + str(retry),
@@ -259,7 +259,7 @@ class Crawler(object):
                 break
             except Exception as e:
                 print("other exception", e)
-            time.sleep(3)
+            time.sleep(wait)
         raise EC.TimeoutException
 
     def _click(self, element, retry=3, reopen=True):
