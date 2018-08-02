@@ -196,7 +196,7 @@ class Crawler(object):
             soup = BeautifulSoup(text, "html.parser")
             return soup, text
         except (EC.WebDriverException, TypeError):
-            currentURL = self.driver.current_url
+            currentURL = self._getCurrentURL()
             if reopen:
                 print("re-open _getSoupText")
                 self.close()
@@ -208,7 +208,7 @@ class Crawler(object):
             return soup, text
 
     def _findElements(self, method, target, retry=3, reopen=True):
-        url = self.driver.current_url
+        url = self._getCurrentURL()
         for i in range(retry):
             try:
                 return eval("self.driver.find_elements_by_" +
@@ -245,8 +245,25 @@ class Crawler(object):
                 print("Could not find elements", target)
         raise EC.TimeoutException
 
+    def _getCurrentURL(self, retry=3):
+        for i in range(retry):
+            try:
+                return self._getCurrentURL()
+            except (EC.TimeoutException, EC.WebDriverException):
+                print(
+                    "timeout: Retrying get current url " + str(i + 1) + "/" + str(retry),
+                )
+            except (ConnectionResetError, BrokenPipeError,
+                    ConnectionRefusedError) as e:
+                print(str(e))
+                break
+            except Exception as e:
+                print("other exception", e)
+            time.sleep(3)
+        raise EC.TimeoutException
+
     def _click(self, element, retry=3, reopen=True):
-        url = self.driver.current_url
+        url = self._getCurrentURL()
         for i in range(retry):
             try:
                 element.location_once_scrolled_into_view
