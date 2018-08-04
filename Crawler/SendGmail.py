@@ -1,8 +1,15 @@
 import smtplib
+import mimetypes
 try:
     from email.MIMEText import MIMEText
+    from email.MIMEBase import MIMEBase
+    from email.MIMEMultipart import MIMEMultipart
+    from email import Encoders as encoders
 except ImportError:
     from email.mime.text import MIMEText
+    from email.mime.base import MIMEBase
+    from email.mime.multipart import MIMEMultipart
+    from email import encoders
 
 
 class SendGmail(object):
@@ -11,11 +18,26 @@ class SendGmail(object):
         self.address = address
         self.password = password
 
-    def create_message(self, from_addr, to_addr, subject, body):
-        msg = MIMEText(body)
+    def create_message(self, from_addr, to_addr, subject, body, attach):
+        msg = MIMEMultipart()
         msg['Subject'] = subject
         msg['From'] = from_addr
         msg['To'] = to_addr
+
+        body = MIMEText(body)
+        msg.attach(body)
+
+        if attach is not None:
+            TYPE = mimetypes.guess_type(attach["name"])
+            TYPE = TYPE[0].split("/")
+            attachment = MIMEBase(TYPE[0], TYPE[1])
+            with open(attach["path"], "rb") as f:
+                attachment.set_payload(f.read())
+            encoders.encode_base64(attachment)
+            msg.attach(attachment)
+            attachment.add_header(
+                "Content-Disposition", "attachment", filename=attach["name"])
+
         return msg
 
     def send_via_gmail(self, from_addr, to_addr, msg):
@@ -27,14 +49,19 @@ class SendGmail(object):
         s.sendmail(from_addr, [to_addr], msg.as_string())
         s.close()
 
-    def send(self, subject=None, message=None):
+    def send(self, subject=None, message=None, attach=None):
         from_addr = 'user'
         to_addr = self.address
-        msg = self.create_message(from_addr, to_addr, subject, str(message))
+        msg = self.create_message(
+            from_addr, to_addr, subject, str(message), attach)
         self.send_via_gmail(from_addr, to_addr, msg)
 
 
 if __name__ == '__main__':
     from private import address, password
     sg = SendGmail(address, password)
-    sg.send(subject="test", message="test")
+    attach = {
+        "name": "test.png",
+        "path": "./test.png",
+    }
+    sg.send(subject="test", message="test", attach=attach)
