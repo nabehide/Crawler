@@ -28,15 +28,16 @@ class SendGmail(object):
         msg.attach(body)
 
         if attach is not None:
-            TYPE = mimetypes.guess_type(attach["name"])
+            name = attach.split("/")[-1]
+            TYPE = mimetypes.guess_type(name)
             TYPE = TYPE[0].split("/")
             attachment = MIMEBase(TYPE[0], TYPE[1])
-            with open(attach["path"], "rb") as f:
+            with open(attach, "rb") as f:
                 attachment.set_payload(f.read())
             encoders.encode_base64(attachment)
             msg.attach(attachment)
             attachment.add_header(
-                "Content-Disposition", "attachment", filename=attach["name"])
+                "Content-Disposition", "attachment", filename=name)
 
         return msg
 
@@ -60,8 +61,5 @@ class SendGmail(object):
 if __name__ == '__main__':
     from private import address, password
     sg = SendGmail(address, password)
-    attach = {
-        "name": "test.png",
-        "path": "./test.png",
-    }
+    attach = "./test.png"
     sg.send(subject="test", message="test", attach=attach)
