@@ -48,6 +48,8 @@ class Crawler(object):
 
         self.timeout = 60
 
+        self.filenameScreenshot = "screenshot.png"
+
     def _loadConfig(self, config):
         if "driverPath" in config.keys():
             self.driverPath = config["driverPath"]
