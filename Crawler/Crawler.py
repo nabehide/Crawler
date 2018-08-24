@@ -328,3 +328,12 @@ class Crawler(object):
             self.driver.get(target)
             return True
         raise EC.TimeoutException
+
+    def _screenshot(self, filename=None):
+        if filename is None:
+            filename = self.filenameScreenshot
+        try:
+            self.driver.save_screenshot(filename)
+            return True
+        except (EC.UnexpectedAlertPresentException, EC.TimeoutException):
+            return None
