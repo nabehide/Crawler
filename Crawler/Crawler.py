@@ -34,7 +34,6 @@ class Crawler(object):
         self.options.add_argument("--hide-scrollbars")
         self.options.add_argument("--enable-logging")
         self.options.add_argument("--log-level=0")
-        self.options.add_argument("--v=99")
         self.options.add_argument("--single-process")
         self.options.add_argument("--ignore-certificate-errors")
         self.options.add_argument(
